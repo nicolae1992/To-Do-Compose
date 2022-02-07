@@ -22,18 +22,45 @@ import md.todo.compouse.R
 import md.todo.compouse.component.PriorityItem
 import md.todo.compouse.data.models.Priority
 import md.todo.compouse.ui.theme.*
+import md.todo.compouse.ui.viewmodels.ShareViewModel
+import md.todo.compouse.until.SearchAppBarState
 
 @Composable
-fun ListAppbar() {
-    /*  DefaultListAppBar(
-          onSearchClicked = {},
-          onSortAction = {},
-          onDeleteClick = {}
-      )*/
+fun ListAppbar(
+    shareViewModel: ShareViewModel,
+    searchAppBarState: SearchAppBarState,
+    searchTextState: String
+) {
+    when (searchAppBarState) {
+        SearchAppBarState.CLOSED -> {
+            DefaultListAppBar(
+                onSearchClicked = {
+                    shareViewModel.searchAppBarState.value =
+                        SearchAppBarState.OPENED
+                },
+                onSortAction = {},
+                onDeleteClick = {}
+            )
+        }
+        else -> {
+            SearchAppBar(
+                text = searchTextState,
+                onTextChange = { newText ->
+                    shareViewModel.searchTextState.value = newText
+                },
+                onCloseClicked = {
+                    shareViewModel.searchAppBarState.value =
+                        SearchAppBarState.CLOSED
+                    shareViewModel.searchTextState.value = ""
+                },
+                onSearchClicked = {
 
-    SearchAppBar(text = "", onTextChange = {}, onCloseClicked = { }) {
-
+                }
+            )
+        }
     }
+
+
 }
 
 @Composable
