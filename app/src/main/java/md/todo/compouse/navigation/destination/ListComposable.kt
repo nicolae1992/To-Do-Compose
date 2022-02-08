@@ -1,5 +1,6 @@
 package md.todo.compouse.navigation.destination
 
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
@@ -9,6 +10,7 @@ import md.todo.compouse.ui.viewmodels.ShareViewModel
 import md.todo.compouse.until.Constants.LIST_ARGUMENT_KEY
 import md.todo.compouse.until.Constants.LIST_SCREEN
 
+@OptIn(ExperimentalMaterialApi::class)
 fun NavGraphBuilder.listComposable(
     navToTaskScreen: (taskId: Int) -> Unit,
     shareViewModel: ShareViewModel

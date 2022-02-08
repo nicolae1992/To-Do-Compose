@@ -8,6 +8,7 @@ import md.todo.compouse.ui.theme.NonPriorityColor
 
 enum class Priority(val color: Color) {
     HIGH(HighPriorityColor),
+    HIGHT(HighPriorityColor),
     MEDIUM(MediumPriorityColor),
     LOW(LowPriorityColor),
     NON(NonPriorityColor)
