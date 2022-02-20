@@ -10,14 +10,16 @@ import md.todo.compouse.until.Constants.TASK_ARGUMENT_KEY
 import md.todo.compouse.until.Constants.TASK_SCREEN
 
 fun NavGraphBuilder.taskComposable(
-    navigateToListScreen:(Action) ->Unit
-){
+    navigateToListScreen: (Action) -> Unit
+) {
     composable(
         route = TASK_SCREEN,
-        arguments = listOf(navArgument(TASK_ARGUMENT_KEY){
+        arguments = listOf(navArgument(TASK_ARGUMENT_KEY) {
             type = NavType.IntType
         })
-    ){
-
+    ) { navBackStackEntry ->
+        val taskId = navBackStackEntry.arguments?.getInt(TASK_ARGUMENT_KEY) ?: -1
+       // navigateToListScreen(Action.ADD)
+        println("${TASK_ARGUMENT_KEY}:-> $taskId")
     }
 }

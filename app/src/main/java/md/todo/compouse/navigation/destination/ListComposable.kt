@@ -10,7 +10,7 @@ import md.todo.compouse.ui.viewmodels.ShareViewModel
 import md.todo.compouse.until.Constants.LIST_ARGUMENT_KEY
 import md.todo.compouse.until.Constants.LIST_SCREEN
 
-@OptIn(ExperimentalMaterialApi::class)
+@ExperimentalMaterialApi
 fun NavGraphBuilder.listComposable(
     navToTaskScreen: (taskId: Int) -> Unit,
     shareViewModel: ShareViewModel
