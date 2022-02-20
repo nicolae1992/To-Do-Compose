@@ -13,4 +13,6 @@
     <string name="title_bar_add_task">Add task</string>
     <string name="content_description_back_icon">Back Arrow</string>
     <string name="content_description_action_add">Add task</string>
+    <string name="content_description_delete_icon">Delete Icon</string>
+    <string name="content_description_update_icon">Update Icon</string>
 </resources>
