@@ -19,9 +19,20 @@ import md.todo.compouse.data.models.Priority
 import md.todo.compouse.data.models.ToDoTask
 import md.todo.compouse.ui.theme.*
 
-@ExperimentalMaterialApi
 @Composable
 fun ListContent(
+    tasks: List<ToDoTask>,
+    navigateToDoTask: (taskId: Int) -> Unit
+) {
+    if (tasks.isEmpty()) {
+        EmptyContent()
+    } else {
+        DisplayTasks(tasks = tasks, navigateToDoTask = navigateToDoTask)
+    }
+}
+
+@Composable
+fun DisplayTasks(
     tasks: List<ToDoTask>,
     navigateToDoTask: (taskId: Int) -> Unit
 ) {
@@ -38,7 +49,7 @@ fun ListContent(
     }
 }
 
-@ExperimentalMaterialApi
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun TaskItem(
     toDoTask: ToDoTask,
