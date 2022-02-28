@@ -15,4 +15,7 @@
     <string name="content_description_action_add">Add task</string>
     <string name="content_description_delete_icon">Delete Icon</string>
     <string name="content_description_update_icon">Update Icon</string>
+    <string name="content_description_dropdon_icon">Drop-Down Icon</string>
+    <string name="title_lable_task">Title</string>
+    <string name="title_label_task_description">Description</string>
 </resources>
