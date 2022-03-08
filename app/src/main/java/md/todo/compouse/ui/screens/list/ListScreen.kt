@@ -12,6 +12,7 @@ import md.todo.compouse.ui.theme.fabBackgroundColor
 import md.todo.compouse.ui.viewmodels.ShareViewModel
 import md.todo.compouse.until.Action
 import md.todo.compouse.until.SearchAppBarState
+import javax.annotation.meta.When
 
 @ExperimentalMaterialApi
 @Composable
@@ -24,6 +25,7 @@ fun ListScreen(
     }
     val action by shareViewModel.action
     val allTasks by shareViewModel.allTask.collectAsState()
+    val searchedTasks by shareViewModel.searchTasks.collectAsState()
 
     val searchAppBarState: SearchAppBarState by shareViewModel.searchAppBarState
     val searchTextState: String by shareViewModel.searchTextState
@@ -46,7 +48,12 @@ fun ListScreen(
             )
         },
         content = {
-            ListContent(tasks = allTasks, navigateToDoTask = navToTaskScreen)
+            ListContent(
+                allTasks = allTasks,
+                searchedTasks = searchedTasks,
+                searchAppBarState = searchAppBarState,
+                navigateToDoTask = navToTaskScreen
+            )
         },
         floatingActionButton = {
             ListFab(fabOnClick = navToTaskScreen)
@@ -86,7 +93,7 @@ fun DisplaySnackBar(
             scope.launch {
                 val snackBarResult =
                     scaffoldState.snackbarHostState.showSnackbar(
-                        message = "${action.name}: $taskTitle",
+                        message = setMessage(action, taskTitle),
                         actionLabel = setActionLabel(action)
                     )
                 undoDeleteTask(
@@ -96,6 +103,13 @@ fun DisplaySnackBar(
                 )
             }
         }
+    }
+}
+
+private fun setMessage(action: Action, taskTitle: String): String {
+    return when (action) {
+        Action.DELETE_ALL -> "All Tasks Removed"
+        else -> "${action.name}: $taskTitle"
     }
 }
 

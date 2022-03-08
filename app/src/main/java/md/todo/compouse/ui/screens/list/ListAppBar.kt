@@ -23,6 +23,7 @@ import md.todo.compouse.component.PriorityItem
 import md.todo.compouse.data.models.Priority
 import md.todo.compouse.ui.theme.*
 import md.todo.compouse.ui.viewmodels.ShareViewModel
+import md.todo.compouse.until.Action
 import md.todo.compouse.until.SearchAppBarState
 
 @Composable
@@ -39,7 +40,9 @@ fun ListAppbar(
                         SearchAppBarState.OPENED
                 },
                 onSortAction = {},
-                onDeleteClick = {}
+                onDeleteClick = {
+                    shareViewModel.action.value = Action.DELETE_ALL
+                }
             )
         }
         else -> {
@@ -54,7 +57,7 @@ fun ListAppbar(
                     shareViewModel.searchTextState.value = ""
                 },
                 onSearchClicked = {
-
+                    shareViewModel.searchDatabase(it)
                 }
             )
         }

@@ -19,18 +19,45 @@ import md.todo.compouse.data.models.Priority
 import md.todo.compouse.data.models.ToDoTask
 import md.todo.compouse.ui.theme.*
 import md.todo.compouse.until.RequestState
+import md.todo.compouse.until.SearchAppBarState
 
 @Composable
 fun ListContent(
-    tasks: RequestState<List<ToDoTask>>,
-            navigateToDoTask: (taskId: Int) -> Unit
+    allTasks: RequestState<List<ToDoTask>>,
+    searchedTasks: RequestState<List<ToDoTask>>,
+    searchAppBarState: SearchAppBarState,
+    navigateToDoTask: (taskId: Int) -> Unit
 ) {
-    if (tasks is RequestState.Success) {
-        if (tasks.data.isEmpty()) {
-            EmptyContent()
-        } else {
-            DisplayTasks(tasks = tasks.data, navigateToDoTask = navigateToDoTask)
+    if (searchAppBarState == SearchAppBarState.TRIGGERED) {
+        if (searchedTasks is RequestState.Success) {
+            HandleListComponent(
+                tasks = searchedTasks.data,
+                navigateToSearchScreen = navigateToDoTask
+            )
         }
+    }else{
+        if (allTasks is RequestState.Success) {
+            HandleListComponent(
+                tasks = allTasks.data,
+                navigateToSearchScreen = navigateToDoTask
+            )
+        }
+    }
+}
+
+@Composable
+fun HandleListComponent(
+    tasks: List<ToDoTask>,
+    navigateToSearchScreen: (taskId: Int) -> Unit
+
+) {
+    if (tasks.isEmpty()) {
+        EmptyContent()
+    } else {
+        DisplayTasks(
+            tasks = tasks,
+            navigateToDoTask = navigateToSearchScreen
+        )
     }
 }
 
