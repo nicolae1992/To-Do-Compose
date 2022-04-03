@@ -12,7 +12,6 @@ import md.todo.compouse.ui.theme.fabBackgroundColor
 import md.todo.compouse.ui.viewmodels.ShareViewModel
 import md.todo.compouse.until.Action
 import md.todo.compouse.until.SearchAppBarState
-import javax.annotation.meta.When
 
 @ExperimentalMaterialApi
 @Composable
@@ -22,11 +21,14 @@ fun ListScreen(
 ) {
     LaunchedEffect(key1 = true) {
         shareViewModel.getAllTasks()
+        shareViewModel.readSortState()
     }
     val action by shareViewModel.action
     val allTasks by shareViewModel.allTask.collectAsState()
     val searchedTasks by shareViewModel.searchTasks.collectAsState()
-
+    val sortState by shareViewModel.sortState.collectAsState()
+    val lowPriorityTasks by shareViewModel.lowPriority.collectAsState()
+    val heightPriorityTasks by shareViewModel.heightPriority.collectAsState()
     val searchAppBarState: SearchAppBarState by shareViewModel.searchAppBarState
     val searchTextState: String by shareViewModel.searchTextState
     val scaffoldState = rememberScaffoldState()
@@ -51,6 +53,9 @@ fun ListScreen(
             ListContent(
                 allTasks = allTasks,
                 searchedTasks = searchedTasks,
+                lowPriorityTasks = lowPriorityTasks,
+                highPriorityTasks = heightPriorityTasks,
+                sortState = sortState,
                 searchAppBarState = searchAppBarState,
                 navigateToDoTask = navToTaskScreen
             )

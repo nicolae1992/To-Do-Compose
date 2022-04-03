@@ -25,22 +25,44 @@ import md.todo.compouse.until.SearchAppBarState
 fun ListContent(
     allTasks: RequestState<List<ToDoTask>>,
     searchedTasks: RequestState<List<ToDoTask>>,
+    lowPriorityTasks: List<ToDoTask>,
+    highPriorityTasks: List<ToDoTask>,
+    sortState: RequestState<Priority>,
     searchAppBarState: SearchAppBarState,
     navigateToDoTask: (taskId: Int) -> Unit
 ) {
-    if (searchAppBarState == SearchAppBarState.TRIGGERED) {
-        if (searchedTasks is RequestState.Success) {
-            HandleListComponent(
-                tasks = searchedTasks.data,
-                navigateToSearchScreen = navigateToDoTask
-            )
-        }
-    }else{
-        if (allTasks is RequestState.Success) {
-            HandleListComponent(
-                tasks = allTasks.data,
-                navigateToSearchScreen = navigateToDoTask
-            )
+    if (sortState is RequestState.Success) {
+        when {
+            searchAppBarState == SearchAppBarState.TRIGGERED -> {
+                if (searchedTasks is RequestState.Success) {
+                    HandleListComponent(
+                        tasks = searchedTasks.data,
+                        navigateToSearchScreen = navigateToDoTask
+                    )
+                }
+            }
+            sortState.data == Priority.HIGH || sortState.data == Priority.HIGHT -> {
+                HandleListComponent(
+                    tasks = highPriorityTasks,
+                    navigateToSearchScreen = navigateToDoTask
+                )
+            }
+
+            sortState.data == Priority.LOW -> {
+                HandleListComponent(
+                    tasks = lowPriorityTasks,
+                    navigateToSearchScreen = navigateToDoTask
+                )
+            }
+
+            else -> {
+                if (allTasks is RequestState.Success) {
+                    HandleListComponent(
+                        tasks = allTasks.data,
+                        navigateToSearchScreen = navigateToDoTask
+                    )
+                }
+            }
         }
     }
 }

@@ -40,7 +40,7 @@ fun ListAppbar(
                     shareViewModel.searchAppBarState.value =
                         SearchAppBarState.OPENED
                 },
-                onSortAction = {},
+                onSortAction = {shareViewModel.persistSortingState(it)},
                 onDeleteClick = {
                     shareViewModel.action.value = Action.DELETE_ALL
                 }
