@@ -1,23 +1,30 @@
 package md.todo.compouse.ui.screens.list
 
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import md.todo.compouse.R
 import md.todo.compouse.data.models.Priority
 import md.todo.compouse.data.models.ToDoTask
 import md.todo.compouse.ui.theme.*
+import md.todo.compouse.until.Action
 import md.todo.compouse.until.RequestState
 import md.todo.compouse.until.SearchAppBarState
 
@@ -29,6 +36,7 @@ fun ListContent(
     highPriorityTasks: List<ToDoTask>,
     sortState: RequestState<Priority>,
     searchAppBarState: SearchAppBarState,
+    onSwipeToDelete: (Action, ToDoTask) -> Unit,
     navigateToDoTask: (taskId: Int) -> Unit
 ) {
     if (sortState is RequestState.Success) {
@@ -37,6 +45,7 @@ fun ListContent(
                 if (searchedTasks is RequestState.Success) {
                     HandleListComponent(
                         tasks = searchedTasks.data,
+                        onSwipeToDelete = onSwipeToDelete,
                         navigateToSearchScreen = navigateToDoTask
                     )
                 }
@@ -44,6 +53,7 @@ fun ListContent(
             sortState.data == Priority.HIGH || sortState.data == Priority.HIGHT -> {
                 HandleListComponent(
                     tasks = highPriorityTasks,
+                    onSwipeToDelete = onSwipeToDelete,
                     navigateToSearchScreen = navigateToDoTask
                 )
             }
@@ -51,6 +61,7 @@ fun ListContent(
             sortState.data == Priority.LOW -> {
                 HandleListComponent(
                     tasks = lowPriorityTasks,
+                    onSwipeToDelete = onSwipeToDelete,
                     navigateToSearchScreen = navigateToDoTask
                 )
             }
@@ -59,6 +70,7 @@ fun ListContent(
                 if (allTasks is RequestState.Success) {
                     HandleListComponent(
                         tasks = allTasks.data,
+                        onSwipeToDelete = onSwipeToDelete,
                         navigateToSearchScreen = navigateToDoTask
                     )
                 }
@@ -67,9 +79,11 @@ fun ListContent(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HandleListComponent(
     tasks: List<ToDoTask>,
+    onSwipeToDelete: (Action, ToDoTask) -> Unit,
     navigateToSearchScreen: (taskId: Int) -> Unit
 
 ) {
@@ -78,14 +92,17 @@ fun HandleListComponent(
     } else {
         DisplayTasks(
             tasks = tasks,
+            onSwipeToDelete = onSwipeToDelete,
             navigateToDoTask = navigateToSearchScreen
         )
     }
 }
 
+@ExperimentalMaterialApi
 @Composable
 fun DisplayTasks(
     tasks: List<ToDoTask>,
+    onSwipeToDelete: (Action, ToDoTask) -> Unit,
     navigateToDoTask: (taskId: Int) -> Unit
 ) {
     LazyColumn {
@@ -93,11 +110,51 @@ fun DisplayTasks(
             items = tasks,
             key = { task -> task.id }
         ) { task ->
-            TaskItem(
-                toDoTask = task,
-                navigateToDoTask = navigateToDoTask
+            val dismissState = rememberDismissState()
+            val dismissDirection = dismissState.dismissDirection
+            val isDismissed = dismissState.isDismissed(DismissDirection.EndToStart)
+
+            if (isDismissed && dismissDirection == DismissDirection.EndToStart){
+                onSwipeToDelete(Action.DELETE,task)
+            }
+            val degree by animateFloatAsState(
+                targetValue =
+                if (dismissState.targetValue == DismissValue.Default)
+                    0f
+                else
+                    -45f
+            )
+            SwipeToDismiss(
+                state = dismissState,
+                directions = setOf(DismissDirection.EndToStart),
+                dismissThresholds = { FractionalThreshold(fraction = 0.2f) },
+                background = { ReadBackground(degree = degree) },
+                dismissContent = {
+                    TaskItem(
+                        toDoTask = task,
+                        navigateToDoTask = navigateToDoTask
+                    )
+                }
             )
         }
+    }
+}
+
+@Composable
+fun ReadBackground(degree: Float) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(HighPriorityColor)
+            .padding(horizontal = LARGEST_PADDING),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Icon(
+            modifier = Modifier.rotate(degrees = degree),
+            imageVector = Icons.Filled.Delete,
+            contentDescription = stringResource(id = R.string.content_description_delete_icon),
+            tint = Color.White
+        )
     }
 }
 

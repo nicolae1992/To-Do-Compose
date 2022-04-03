@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import kotlinx.coroutines.launch
 import md.todo.compouse.R
+import md.todo.compouse.data.models.ToDoTask
 import md.todo.compouse.ui.theme.fabBackgroundColor
 import md.todo.compouse.ui.viewmodels.ShareViewModel
 import md.todo.compouse.until.Action
@@ -57,6 +58,12 @@ fun ListScreen(
                 highPriorityTasks = heightPriorityTasks,
                 sortState = sortState,
                 searchAppBarState = searchAppBarState,
+                onSwipeToDelete= {action,task->
+                    shareViewModel.action.value = action
+                    shareViewModel.updateTaskFields(
+                        toDoTask = task
+                    )
+                },
                 navigateToDoTask = navToTaskScreen
             )
         },
