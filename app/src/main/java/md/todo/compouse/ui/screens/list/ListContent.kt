@@ -1,7 +1,11 @@
 package md.todo.compouse.ui.screens.list
 
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,8 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -20,6 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import md.todo.compouse.R
 import md.todo.compouse.data.models.Priority
 import md.todo.compouse.data.models.ToDoTask
@@ -114,8 +119,13 @@ fun DisplayTasks(
             val dismissDirection = dismissState.dismissDirection
             val isDismissed = dismissState.isDismissed(DismissDirection.EndToStart)
 
-            if (isDismissed && dismissDirection == DismissDirection.EndToStart){
-                onSwipeToDelete(Action.DELETE,task)
+            if (isDismissed && dismissDirection == DismissDirection.EndToStart) {
+                val scope = rememberCoroutineScope()
+                scope.launch {
+                    delay(300)
+                    onSwipeToDelete(Action.DELETE, task)
+                }
+
             }
             val degree by animateFloatAsState(
                 targetValue =
@@ -124,18 +134,41 @@ fun DisplayTasks(
                 else
                     -45f
             )
-            SwipeToDismiss(
-                state = dismissState,
-                directions = setOf(DismissDirection.EndToStart),
-                dismissThresholds = { FractionalThreshold(fraction = 0.2f) },
-                background = { ReadBackground(degree = degree) },
-                dismissContent = {
-                    TaskItem(
-                        toDoTask = task,
-                        navigateToDoTask = navigateToDoTask
+
+            var itemAppeared by remember {
+                mutableStateOf(false)
+            }
+
+            LaunchedEffect(key1 = true) {
+                itemAppeared = true
+            }
+
+            AnimatedVisibility(
+                visible = itemAppeared && !isDismissed,
+                enter = expandVertically(
+                    animationSpec = tween(
+                        durationMillis = 300
                     )
-                }
-            )
+                ),
+                exit = shrinkVertically(
+                    animationSpec = tween(
+                        durationMillis = 300
+                    )
+                )
+            ) {
+                SwipeToDismiss(
+                    state = dismissState,
+                    directions = setOf(DismissDirection.EndToStart),
+                    dismissThresholds = { FractionalThreshold(fraction = 0.2f) },
+                    background = { ReadBackground(degree = degree) },
+                    dismissContent = {
+                        TaskItem(
+                            toDoTask = task,
+                            navigateToDoTask = navigateToDoTask
+                        )
+                    }
+                )
+            }
         }
     }
 }
